@@ -25,7 +25,9 @@ Route::middleware('auth')->group(function () {
 
     // リンク投稿機能
     Route::get('/links/create', [LinkController::class, 'create'])->name('links.create');
+    Route::get('/links', [LinkController::class, 'index'])->name('links.index');
     Route::post('/links', [LinkController::class, 'store'])->name('links.store');
+
 });
 
 require __DIR__.'/auth.php';

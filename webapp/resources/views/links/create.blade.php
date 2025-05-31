@@ -1,46 +1,79 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-5" style="max-width: 600px;">
-    <h2 class="mb-4">リンクを登録する</h2>
+<div class="max-w-2xl mx-auto px-4 py-8">
+    <h2 class="text-2xl font-semibold mb-6">リンクを保存する</h2>
 
-    @if (session('status'))
-        <div class="alert alert-success">
-            {{ session('status') }}
-        </div>
-    @endif
-
-    <form action="{{ route('links.store') }}" method="POST">
+    <form method="POST" action="{{ route('links.store') }}">
         @csrf
 
-        <div class="form-group mb-3">
-            <label for="title">タイトル</label>
-            <input type="text" name="title" id="title" value="{{ old('title') }}" class="form-control" required>
-            @error('title') <div class="text-danger">{{ $message }}</div> @enderror
+        <!-- URL -->
+        <div class="mb-4">
+            <label for="url" class="block text-sm font-medium text-gray-700">URL</label>
+            <input id="url" name="url" type="url" required
+                class="mt-1 block w-full border-gray-300 rounded shadow-sm"
+                placeholder="https://example.com">
+            @error('url')
+                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="form-group mb-3">
-            <label for="url">URL</label>
-            <input type="url" name="url" id="url" value="{{ old('url') }}" class="form-control" required>
-            @error('url') <div class="text-danger">{{ $message }}</div> @enderror
+        <!-- タイトル -->
+        <div class="mb-4">
+            <label for="title" class="block text-sm font-medium text-gray-700">タイトル</label>
+            <input id="title" name="title" type="text"
+                class="mt-1 block w-full border-gray-300 rounded shadow-sm">
+            @error('title')
+                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="form-group mb-3">
-            <label for="description">説明</label>
-            <textarea name="description" id="description" class="form-control" rows="4">{{ old('description') }}</textarea>
-            @error('description') <div class="text-danger">{{ $message }}</div> @enderror
+        <!-- 説明文 -->
+        <div class="mb-4">
+            <label for="description" class="block text-sm font-medium text-gray-700">説明・メモ</label>
+            <textarea id="description" name="description" rows="4"
+                class="mt-1 block w-full border-gray-300 rounded shadow-sm"></textarea>
+            @error('description')
+                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="form-group mb-3">
-            <label for="is_public">公開設定</label>
-            <select name="is_public" id="is_public" class="form-control" required>
-                <option value="0" {{ old('is_public') == '0' ? 'selected' : '' }}>非公開</option>
-                <option value="1" {{ old('is_public') == '1' ? 'selected' : '' }}>公開</option>
+        <!-- 公開設定 -->
+        <div class="mb-6">
+            <label for="is_public" class="block text-sm font-medium text-gray-700">公開範囲</label>
+            <select id="is_public" name="is_public"
+                class="mt-1 block w-full border-gray-300 rounded shadow-sm">
+                <option value="1">公開（誰でも）</option>
+                <option value="0">非公開（自分のみ）</option>
             </select>
-            @error('is_public') <div class="text-danger">{{ $message }}</div> @enderror
         </div>
 
-        <button type="submit" class="btn btn-primary">登録する</button>
+        <!-- タグ選択（仮） -->
+        <div class="mb-6">
+            <p class="block text-sm font-medium text-gray-700 mb-1">タグを選択（仮）</p>
+            <div class="flex flex-wrap gap-2">
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" name="tags[]" value="1">
+                    <span>PHP</span>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" name="tags[]" value="2">
+                    <span>Laravel</span>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" name="tags[]" value="3">
+                    <span>Docker</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 投稿ボタン -->
+        <div class="flex justify-end">
+            <button type="submit"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                リンクを保存
+            </button>
+        </div>
     </form>
 </div>
 @endsection

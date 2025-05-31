@@ -17,17 +17,40 @@ class LinkController extends Controller
     // 登録処理
     public function store(Request $request)
     {
+        // バリデーション
         $validated = $request->validate([
-            'title' => 'required|max:255',
-            'url' => 'required|url|max:1000',
-            'description' => 'nullable|max:1000',
-            'is_public' => 'required|boolean',
+            'url' => ['required', 'url'],
+            'title' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'is_public' => ['required', 'boolean'],
+            'tags' => ['array'], // タグは任意（存在する場合のみ）
+            'tags.*' => ['integer'], // タグID配列
         ]);
 
-        $validated['user_id'] = Auth::id();
+        // リンクを保存
+        $link = new Link();
+        $link->user_id = Auth::id();
+        $link->url = $validated['url'];
+        $link->title = $validated['title'] ?? null;
+        $link->description = $validated['description'] ?? null;
+        $link->is_public = $validated['is_public'];
+        $link->save();
 
-        Link::create($validated);
+        // タグがあれば同期
+        if (!empty($validated['tags'])) {
+            $link->tags()->sync($validated['tags']);
+        }
 
-        return redirect()->route('links.create')->with('status', 'リンクを登録しました！');
+        return redirect()->route('links.create')->with('status', 'リンクを保存しました');
+    }
+
+    public function index()
+    {
+        $links = Link::with(['tags.category'])
+            ->where('user_id', auth::id())
+            ->latest()
+            ->get();
+
+        return view('links.index', compact('links'));
     }
 }
